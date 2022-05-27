@@ -152,7 +152,10 @@ def unified(url: str) -> str:
 def parse_info(res):
     info_parsed = {}
     title = re.findall('>(.*?)<\/h4>', res.text)[0]
-    info_chunks = re.findall('>(.*?)<\/td>', res.text)
+    if 'drivebuzz' in url:
+      info_chunks = re.findall('<td\salign="right">(.*?)<\/td>', res.text)
+    else:
+      info_chunks = re.findall('>(.*?)<\/td>', res.text)
     info_parsed['title'] = title
     for i in range(0, len(info_chunks), 2):
         info_parsed[info_chunks[i]] = info_chunks[i+1]
@@ -169,6 +172,8 @@ def udrive(url: str) -> str:
     if 'kolop' in url:
         client.cookies.update({'crypt': KATDRIVE_CRYPT})
     if 'drivefire' in url:
+        client.cookies.update({'crypt': DRIVEFIRE_CRYPT})
+    if 'drivebuzz' in url:
         client.cookies.update({'crypt': DRIVEFIRE_CRYPT})
     res = client.get(url)
     info_parsed = parse_info(res)
