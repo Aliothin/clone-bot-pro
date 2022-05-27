@@ -322,6 +322,25 @@ def is_drivefire_link(url: str):
     url = re.match(r'https?://(drivefire)\.\S+', url)
     return bool(url)
 
+def is_adfly_link(url: str):
+    url = re.match(r'https?://(adf)\.ly/\S+', url)
+    return bool(url)
+
+def is_gplinks_link(url: str):
+    url = re.match(r'https?://(gplinks)\.\S+', url)
+    return bool(url)
+
+def is_rocklinks_link(url: str):
+    if 'spidermods.in' in url:
+        return bool(url)
+    if 'rocklink.in' in url:
+        return bool(url)
+    if 'rocklinks.net' in url:
+        return bool(url)
+    
+def is_droplink_link(url: str):
+    url = re.match(r'https?://(droplink)\.\S+', url)
+    return bool(url)
 
 def is_mega_link(url: str):
     return "mega.nz" in url or "mega.co.nz" in url
