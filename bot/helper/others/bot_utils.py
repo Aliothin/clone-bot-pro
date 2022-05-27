@@ -271,7 +271,7 @@ def is_gdrive_link(url: str):
 
 
 def is_unified_link(url: str):
-    url = re.match(r'https?://(appdrive|driveapp|driveace|gdflix|drivelinks|drivebitdrivesharer)\.\S+', url)
+    url = re.match(r'https?://(appdrive|driveapp|driveace|gdflix|drivelinks|drivebit|drivesharer)\.\S+', url)
     return bool(url)
 
 def is_gdtot_link(url: str):
