@@ -287,7 +287,7 @@ def is_adfly_link(url: str):
     return bool(url)
 
 def is_gplinks_link(url: str):
-    url = re.match(r'https?://(gplinks)\.\S+', url)
+    url = re.match(r'https?://(gplinks)\.(co|in)/\S+', url)
     return bool(url)
 
 def is_rocklinks_link(url: str):
