@@ -59,6 +59,8 @@ def adfly_bypass(url: str):
 #-----GPlinks Bypass-----#
 
 def gplinks_bypass(url: str):
+    if 'gplinks.in' in url:
+        url = url.replace("gplinks.in", "gplinks.co")
     client = cloudscraper.create_scraper(allow_brotli=False)
     p = urlparse(url)
     final_url = f'{p.scheme}://{p.netloc}/links/go'
