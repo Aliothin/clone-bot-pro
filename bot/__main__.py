@@ -49,6 +49,7 @@ from .functions import (
     mirror_status,
     mirror,
     clone,
+    bypass,
     watch,
     shell,
     eval,
@@ -167,6 +168,8 @@ help_string_telegraph = f"""<br>
 <br><br>
 <b>/{BotCommands.CloneCommand}</b> [drive_url][gdtot_url]: Copy file/folder to Google Drive
 <br><br>
+<b>/{BotCommands.BypassCommand}</b> [shorten_url]: Bypass Shorten Links (Adf.ly/DropLink/GPlinks/RockLinks/Sirigan.my.id)
+<br><br>
 <b>/{BotCommands.CountCommand}</b> [drive_url][gdtot_url]: Count file/folder of Google Drive
 <br><br>
 <b>/{BotCommands.DeleteCommand}</b> [drive_url]: Delete file/folder from Google Drive (Only Owner & Sudo)
@@ -238,6 +241,7 @@ botcmds = [
     (f"{BotCommands.WatchCommand}", "Mirror yt-dlp supported link"),
     (f"{BotCommands.ZipWatchCommand}", "Mirror yt-dlp supported link as zip"),
     (f"{BotCommands.CloneCommand}", "Copy file/folder to Drive"),
+    (f"{BotCommands.BypassCommand}", "Bypass Shorten Links (Adf.ly/DropLink/GPlinks/RockLinks/Sirigan.my.id)"),
     (f"{BotCommands.LeechCommand}", "Leech"),
     (f"{BotCommands.ZipLeechCommand}", "Leech and upload as zip"),
     (f"{BotCommands.UnzipLeechCommand}", "Leech and extract files"),
