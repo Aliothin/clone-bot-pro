@@ -2,10 +2,12 @@ from bot import UNIFIED_EMAIL, UNIFIED_PASS, GDTOT_CRYPT, HUBDRIVE_CRYPT, KATDRI
 from bot.helper.others.exceptions import DirectDownloadLinkException
 import re
 import base64
-
+import lxml
 from lxml import etree
 from urllib.parse import urlparse, parse_qs
+import urllib.request
 import requests
+from bs4 import BeautifulSoup
 
 
 def gdtot(url: str) -> str:
@@ -143,16 +145,38 @@ def unified(url: str) -> str:
         drive_link = etree.HTML(res.content).xpath("//a[contains(@class,'btn btn-primary')]/@href")[0]
         flink = drive_link
         return flink
+    
+    if urlparse(url).netloc == 'drivepro.in' and not info_parsed['error']:
+        res = client.get(info_parsed['gdrive_link'])
+        drive_link = etree.HTML(res.content).xpath("//a[contains(@class,'btn btn-primary')]/@href")[0]
+        flink = drive_link
+        return flink
 
     flink = info_parsed['gdrive_link']
     info_parsed['src_url'] = url
     
     return flink
 
-def parse_info(res):
+def parse_info(res, url):
     info_parsed = {}
     title = re.findall('>(.*?)<\/h4>', res.text)[0]
     info_chunks = re.findall('>(.*?)<\/td>', res.text)
+    info_parsed['title'] = title
+    for i in range(0, len(info_chunks), 2):
+        info_parsed[info_chunks[i]] = info_chunks[i+1]
+    return info_parsed
+
+def parse_infod(res, url):
+    info_parsed = {}
+    
+    user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+    headers = {'User-Agent': user_agent, }
+    request = urllib.request.Request(url, None, headers)
+    response = urllib.request.urlopen(request)
+    soup = BeautifulSoup(response, 'html.parser')
+    title = soup.title.text
+    
+    info_chunks = re.findall('<td\salign="right">(.*?)<\/td>', res.text)
     info_parsed['title'] = title
     for i in range(0, len(info_chunks), 2):
         info_parsed[info_chunks[i]] = info_chunks[i+1]
@@ -163,15 +187,21 @@ def udrive(url: str) -> str:
     if 'hubdrive' in url:
         client.cookies.update({'crypt': HUBDRIVE_CRYPT})
     if 'drivehub' in url:
-        client.cookies.update({'crypt': HUBDRIVE_CRYPT})
+        client.cookies.update({'crypt': KATDRIVE_CRYPT})
     if 'katdrive' in url:
         client.cookies.update({'crypt': KATDRIVE_CRYPT})
     if 'kolop' in url:
         client.cookies.update({'crypt': KATDRIVE_CRYPT})
     if 'drivefire' in url:
         client.cookies.update({'crypt': DRIVEFIRE_CRYPT})
+    if 'drivebuzz' in url:
+        client.cookies.update({'crypt': DRIVEFIRE_CRYPT})
     res = client.get(url)
-    info_parsed = parse_info(res)
+    if 'drivebuzz' in url:
+        info_parsed = parse_infod(res, url)
+    else:
+        info_parsed = parse_info(res, url)
+    
     info_parsed['error'] = False
     
     up = urlparse(url)
@@ -189,13 +219,23 @@ def udrive(url: str) -> str:
         res = client.post(req_url, headers=headers, data=data).json()['file']
     except: return {'error': True, 'src_url': url}
     
-    if 'drivefire.co' in url:
-      return res
+    if 'drivefire' in url:
+        decoded_id = res.rsplit('/', 1)[-1]
+        flink = f"https://drive.google.com/file/d/{decoded_id}"
+        return flink
+    elif 'drivehub' in url:
+        gd_id = res.rsplit("=", 1)[-1]
+        flink = f"https://drive.google.com/open?id={gd_id}"
+        return flink
+    elif 'drivebuzz' in url:
+        gd_id = res.rsplit("=", 1)[-1]
+        flink = f"https://drive.google.com/open?id={gd_id}"
+        return flink
     else:
-      gd_id = re.findall('gd=(.*)', res, re.DOTALL)[0]
-    
+        gd_id = re.findall('gd=(.*)', res, re.DOTALL)[0]
+ 
     info_parsed['gdrive_url'] = f"https://drive.google.com/open?id={gd_id}"
     info_parsed['src_url'] = url
     flink = info_parsed['gdrive_url']
-    
+
     return flink
